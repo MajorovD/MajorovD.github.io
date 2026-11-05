@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib';
+---
+<Base title="Страница не найдена — Дмитрий Майоров">
+  <section class="wrap" style="padding-block:120px;display:flex;flex-direction:column;gap:24px;align-items:flex-start">
+    <h1 class="section-title">Такой страницы нет</h1>
+    <p style="font-size:18px;color:var(--muted)">Возможно, ссылка устарела. Все кейсы — на главной.</p>
+    <a class="btn btn--primary" href={u('/#cases')}>На главную</a>
+  </section>
+</Base>
