@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseCard from '../../components/CaseCard.astro';
+import Contacts from '../../components/Contacts.astro';
+import { u, md, oneLine, embedUrl } from '../../lib';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+  return all.map((entry, i) => ({
+    params: { slug: entry.data.url },
+    props: { entry, next: all.length > 1 ? all[(i + 1) % all.length] : null },
+  }));
+}
+
+const { entry, next } = Astro.props;
+const c = entry.data;
+---
+<Base title={`${oneLine(c.title)} — кейс Дмитрия Майорова`} description={c.summary} image={c.cover}>
+  <div class="wrap case-top">
+    <a class="back" href={u('/#cases')}>← Все кейсы</a>
+  </div>
+
+  <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{oneLine(c.title)}</h1>
+
+  <article class="case-blocks">
+    {c.blocks.map((b, i) => {
+      if (b.type === 'image') return (
+        <div class="blk-image">
+          <picture>
+            {b.image_mobile && <source media="(max-width: 720px)" srcset={u(b.image_mobile)} />}
+            <img src={u(b.image)} alt={b.alt || ''} loading={i < 1 ? 'eager' : 'lazy'} decoding="async" />
+          </picture>
+        </div>
+      );
+      if (b.type === 'text') return (
+        <section class="blk-text">
+          {b.heading && <h2>{b.heading}</h2>}
+          <div class="md" set:html={md(b.body)} />
+        </section>
+      );
+      if (b.type === 'gallery') return (
+        <div class="blk-gallery" style={`grid-template-columns:repeat(${b.columns || 2},1fr)`}>
+          {b.images.map((g) => <img src={u(g.image)} alt={g.alt || ''} loading="lazy" decoding="async" />)}
+        </div>
+      );
+      if (b.type === 'embed') return (
+        <div class="blk-embed">
+          <div class="blk-embed__frame" style={`aspect-ratio:${b.ratio || '16 / 9'}`}>
+            <iframe src={embedUrl(b.url)} loading="lazy" allowfullscreen title="Встроенное видео или прототип"></iframe>
+          </div>
+        </div>
+      );
+      return null;
+    })}
+  </article>
+
+  {next && (
+    <section class="wrap case-next">
+      <h2 class="section-title">Следующий кейс</h2>
+      <CaseCard c={next.data} />
+    </section>
+  )}
+
+  <Contacts />
+  <div style="height:24px"></div>
+</Base>

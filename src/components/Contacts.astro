@@ -1,0 +1,19 @@
+---
+import home from '../data/home.json';
+const { links, contacts } = home;
+---
+<div class="island-wrap" id="contacts">
+  <section class="contacts">
+    <div class="contacts__main">
+      <h2>{contacts.title}</h2>
+      <p class="contacts__text">{contacts.text}</p>
+      <div class="contacts__btns">
+        <a class="btn btn--light" href={links.telegram} target="_blank" rel="noopener">Telegram</a>
+        <a class="btn btn--outline-light" href={`mailto:${links.email}`}>Email</a>
+        <a class="btn btn--outline-light" href={links.hh} target="_blank" rel="noopener">hh.ru</a>
+        <a class="btn btn--outline-light" href={links.resume} target="_blank" rel="noopener">Резюме PDF</a>
+      </div>
+    </div>
+    <div class="contacts__foot">{contacts.copyright}</div>
+  </section>
+</div>

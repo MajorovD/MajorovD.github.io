@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CaseCard from '../components/CaseCard.astro';
+import Contacts from '../components/Contacts.astro';
+import home from '../data/home.json';
+import { u, md } from '../lib';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const { hero, facts, process, experience, links } = home;
+---
+<Base>
+  <section class="hero wrap">
+    <img class="hero__glow hero__glow--1" src={u('/uploads/home/glow1.svg')} alt="" aria-hidden="true" />
+    <img class="hero__glow hero__glow--2" src={u('/uploads/home/glow2.svg')} alt="" aria-hidden="true" />
+    <div class="hero__row">
+      <div class="hero__intro">
+        <img class="hero__avatar" src={u(hero.avatar)} alt={home.name} width="264" height="264" />
+        <h1 class="hero__title">{hero.title} <span>{hero.title_accent}</span></h1>
+        <p class="hero__text">{hero.text}</p>
+        <div class="hero__btns">
+          <a class="btn btn--primary" href="#cases">Смотреть кейсы</a>
+          <a class="btn btn--ghost" href={links.telegram} target="_blank" rel="noopener">Написать в Telegram</a>
+        </div>
+      </div>
+      <aside class="focus card">
+        <p class="focus__label">{hero.focus_title}</p>
+        <ul>{hero.focus.map((f) => <li>{f}</li>)}</ul>
+        <p class="focus__note" style="padding-top:14px">{hero.focus_note}</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="wrap facts" id="about-facts">
+    {facts.map((f) => (
+      <div class="fact card">
+        <h3>{f.title}</h3>
+        <div class="fact__text" set:html={md(f.text)} />
+      </div>
+    ))}
+  </section>
+
+  <section class="wrap cases" id="cases">
+    <h2 class="section-title">{home.cases_title}</h2>
+    <div class="cases__list">
+      {cases.map((c, i) => <CaseCard c={c.data} eager={i === 0} />)}
+    </div>
+  </section>
+
+  <div class="island-wrap">
+    <section class="process">
+      <div class="process__head">
+        <h2 class="section-title">{process.title}</h2>
+        <p>{process.text}</p>
+      </div>
+      <div class="process__steps">
+        {process.steps.map((s) => (
+          <div class="step card">
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap exp" id="about">
+    <h2 class="section-title">{experience.title}</h2>
+    <div class="exp__row">
+      <div class="exp__list card">
+        {experience.items.map((e) => (
+          <div class="exp__item">
+            <div class="exp__years">{e.years}</div>
+            <div>
+              <h3>{e.place}</h3>
+              <p>{e.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="skills card">
+        {experience.skills.map((g) => (
+          <div class="skills__group">
+            <p class="skills__label">{g.group}</p>
+            <div class="tags">{g.items.map((t) => <span class="tag">{t}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Contacts />
+  <div style="height:24px"></div>
+</Base>

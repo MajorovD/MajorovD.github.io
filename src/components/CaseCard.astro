@@ -1,0 +1,16 @@
+---
+import { u } from '../lib';
+interface Props { c: { title: string; url: string; tags: string[]; summary: string; cover: string }; eager?: boolean }
+const { c, eager = false } = Astro.props;
+---
+<a class="case-card card" href={u(`/cases/${c.url}/`)}>
+  <div class="case-card__cover">
+    <img src={u(c.cover)} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  </div>
+  <div class="case-card__body">
+    {c.tags.length > 0 && <div class="tags">{c.tags.map((t) => <span class="tag">{t}</span>)}</div>}
+    <h3 class="case-card__title">{c.title}</h3>
+    {c.summary && <p class="case-card__text">{c.summary}</p>}
+    <span class="case-card__more">Читать кейс →</span>
+  </div>
+</a>

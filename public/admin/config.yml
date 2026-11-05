@@ -1,0 +1,148 @@
+# Настройки админки. Единственное, что нужно поменять один раз, — строка repo ниже.
+backend:
+  name: github
+  repo: MajorovD/MajorovD.github.io
+  branch: main
+
+locale: ru
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: cases
+    label: Кейсы
+    label_singular: кейс
+    folder: src/content/cases
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    slug: "{{fields.url}}"
+    identifier_field: title
+    summary: "{{order}}. {{title}}"
+    sortable_fields: [order, title]
+    media_folder: /public/uploads/cases/{{slug}}
+    public_folder: /uploads/cases/{{slug}}
+    fields:
+      - { label: "Название (как на карточке; можно в 2 строки)", name: title, widget: text }
+      - { label: "Адрес страницы — латиницей, без пробелов (например: fesco)", name: url, widget: string, pattern: ["^[a-z0-9-]+$", "Только латиница, цифры и дефис"] }
+      - { label: "Порядок на главной (1 — первый)", name: order, widget: number, value_type: int, default: 10 }
+      - { label: "Скрыть с сайта (черновик)", name: draft, widget: boolean, default: false }
+      - { label: "Теги", name: tags, widget: list, field: { label: Тег, name: tag, widget: string }, required: false }
+      - { label: "Короткое описание для карточки", name: summary, widget: text }
+      - { label: "Обложка карточки (≈ 1240×840)", name: cover, widget: image }
+      - label: "Содержимое кейса — блоки сверху вниз"
+        name: blocks
+        widget: list
+        required: false
+        label_singular: блок
+        types:
+          - label: "Картинка (секция из Figma)"
+            name: image
+            widget: object
+            summary: "🖼 {{alt}}"
+            fields:
+              - { label: "Картинка для компьютера (ширина 2560 или 1280)", name: image, widget: image }
+              - { label: "Картинка для телефона (ширина 750) — необязательно", name: image_mobile, widget: image, required: false }
+              - { label: "Подпись (для поиска и незрячих)", name: alt, widget: string, required: false }
+          - label: "Текст"
+            name: text
+            widget: object
+            summary: "✏️ {{heading}}"
+            fields:
+              - { label: "Заголовок", name: heading, widget: string, required: false }
+              - { label: "Текст", name: body, widget: markdown, required: false }
+          - label: "Галерея (несколько картинок в ряд)"
+            name: gallery
+            widget: object
+            summary: "🧩 галерея"
+            fields:
+              - { label: "Сколько в ряд", name: columns, widget: select, options: ["2", "3", "4"], default: "2" }
+              - label: "Картинки"
+                name: images
+                widget: list
+                fields:
+                  - { label: "Картинка", name: image, widget: image }
+                  - { label: "Подпись", name: alt, widget: string, required: false }
+          - label: "Видео или прототип (YouTube, Vimeo, Figma)"
+            name: embed
+            widget: object
+            summary: "▶️ {{url}}"
+            fields:
+              - { label: "Ссылка", name: url, widget: string }
+              - { label: "Пропорции", name: ratio, widget: select, options: ["16 / 9", "4 / 3", "9 / 16", "1 / 1"], default: "16 / 9" }
+
+  - name: pages
+    label: Главная страница
+    files:
+      - name: home
+        label: Тексты главной
+        file: src/data/home.json
+        format: json
+        fields:
+          - { label: "Имя в шапке", name: name, widget: string }
+          - { label: "Заголовок вкладки браузера", name: seo_title, widget: string }
+          - { label: "Описание для поисковиков", name: seo_description, widget: text }
+          - label: "Ссылки"
+            name: links
+            widget: object
+            fields:
+              - { label: "Telegram", name: telegram, widget: string }
+              - { label: "Email", name: email, widget: string }
+              - { label: "hh.ru", name: hh, widget: string }
+              - { label: "Резюме PDF (ссылка)", name: resume, widget: string }
+          - label: "Первый экран"
+            name: hero
+            widget: object
+            fields:
+              - { label: "Фото", name: avatar, widget: image }
+              - { label: "Заголовок", name: title, widget: string }
+              - { label: "Заголовок — вторая часть (серым)", name: title_accent, widget: string }
+              - { label: "Текст", name: text, widget: text }
+              - { label: "Заголовок карточки «Фокус»", name: focus_title, widget: string }
+              - { label: "Пункты «Фокус»", name: focus, widget: list, field: { label: Пункт, name: item, widget: string } }
+              - { label: "Подпись под фокусом", name: focus_note, widget: string }
+          - label: "Карточки-факты"
+            name: facts
+            widget: list
+            fields:
+              - { label: "Заголовок", name: title, widget: text }
+              - { label: "Текст (**жирный** — в двух звёздочках)", name: text, widget: text }
+          - { label: "Заголовок блока кейсов", name: cases_title, widget: string }
+          - label: "Как я работаю"
+            name: process
+            widget: object
+            fields:
+              - { label: "Заголовок", name: title, widget: string }
+              - { label: "Подзаголовок", name: text, widget: string }
+              - label: "Шаги"
+                name: steps
+                widget: list
+                fields:
+                  - { label: "Заголовок", name: title, widget: text }
+                  - { label: "Текст", name: text, widget: string }
+          - label: "Опыт и навыки"
+            name: experience
+            widget: object
+            fields:
+              - { label: "Заголовок", name: title, widget: string }
+              - label: "Места работы и учёбы"
+                name: items
+                widget: list
+                fields:
+                  - { label: "Годы", name: years, widget: string }
+                  - { label: "Место", name: place, widget: string }
+                  - { label: "Описание", name: text, widget: text }
+              - label: "Навыки"
+                name: skills
+                widget: list
+                fields:
+                  - { label: "Группа", name: group, widget: string }
+                  - { label: "Навыки", name: items, widget: list, field: { label: Навык, name: item, widget: string } }
+          - label: "Контакты"
+            name: contacts
+            widget: object
+            fields:
+              - { label: "Заголовок", name: title, widget: text }
+              - { label: "Текст", name: text, widget: string }
+              - { label: "Подпись внизу", name: copyright, widget: string }
